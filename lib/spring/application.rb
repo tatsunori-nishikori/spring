@@ -256,11 +256,19 @@ module Spring
     end
 
     def disconnect_database
-      ActiveRecord::Base.remove_connection if active_record_configured?
+      if active_record_configured?
+        ActiveRecord::Base.configurations.each do |connection_key, config|
+          ActiveRecord::Base.remove_connection(connection_key.to_sym)
+        end
+      end
     end
 
     def connect_database
-      ActiveRecord::Base.establish_connection if active_record_configured?
+      if active_record_configured?
+        ActiveRecord::Base.configurations.each do |connection_key, config|
+          ActiveRecord::Base.establish_connection(connection_key.to_sym)
+        end
+      end
     end
 
     # This feels very naughty
